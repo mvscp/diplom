@@ -67,6 +67,14 @@ public class OpcUaHelper {
     }
 
     /**
+     * Чтение значения short переменной.
+     * @param variableName Имя переменной (в формате строки).
+     */
+    public int readShort(String variableName) {
+        return Short.parseShort(readString(variableName));
+    }
+
+    /**
      * Чтение значения int переменной.
      * @param variableName Имя переменной (в формате строки).
      */
@@ -80,6 +88,14 @@ public class OpcUaHelper {
      */
     public double readDouble(String variableName) {
         return Double.parseDouble(readString(variableName));
+    }
+
+    /**
+     * Чтение значения float переменной.
+     * @param variableName Имя переменной (в формате строки).
+     */
+    public float readFloat(String variableName) {
+        return Float.parseFloat(readString(variableName));
     }
 
     /**
@@ -119,4 +135,6 @@ public class OpcUaHelper {
 
         System.out.println("Клиент OPC UA отключен.");
     }
+
+    // jar -cvfm out/artifacts/driver_opc_jar/driver-opc.jar .\src\main\resources\META-INF\MANIFEST.MF -C target/classes .
 }

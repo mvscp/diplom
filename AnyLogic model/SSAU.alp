@@ -113,13 +113,13 @@
 				<Variable Class="PlainVariable">
 					<Id>1738162778765</Id>
 					<Name><![CDATA[cargoPosition]]></Name>
-					<X>380</X><Y>90</Y>
+					<X>320</X><Y>90</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double]]></Type>        
+						<Type><![CDATA[float]]></Type>        
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[0]]></Code>
 						</InitialValue>
@@ -128,13 +128,13 @@
 				<Variable Class="PlainVariable">
 					<Id>1738162778767</Id>
 					<Name><![CDATA[beltSpeed]]></Name>
-					<X>520</X><Y>90</Y>
+					<X>460</X><Y>90</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double]]></Type>        
+						<Type><![CDATA[float]]></Type>        
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[1]]></Code>
 						</InitialValue>
@@ -158,13 +158,13 @@
 				<Variable Class="PlainVariable">
 					<Id>1738165247020</Id>
 					<Name><![CDATA[movingDirection]]></Name>
-					<X>630</X><Y>90</Y>
+					<X>570</X><Y>90</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[int]]></Type>        
+						<Type><![CDATA[short]]></Type>        
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[1]]></Code>
 						</InitialValue>
@@ -292,19 +292,26 @@
 						<Condition><![CDATA[false]]></Condition>
 					</Properties>
 					<Action><![CDATA[if (cargo.getX() + cargoPosition + beltSpeed*movingDirection > belt.getX() + belt.getWidth()*2) {
-	movingDirection = -1;
+	return;
 } else if (cargo.getX() + cargoPosition + beltSpeed*movingDirection < belt.getX()) {
-	movingDirection = 1;
+	return;
 }
-conn.writeVariable("Application.GVL_Conveyor.movingDirection", movingDirection);
 
 cargoPosition += beltSpeed * movingDirection;
+if (cargoPosition == -1) {
+	cargoPosition = 0;
+}
 cargo.setX(belt.getX()+cargoPosition);
-conn.writeVariable("Application.GVL_Conveyor.cargoPosition", (float) cargoPosition);
+conn.writeVariable("Application.GVL_Conveyor.cargoPosition", cargoPosition);
 
 if (cargo.getX() > sensor1.getX() && cargo.getX() < sensor2.getX()) {
     sensor1.setFillColor(red);
     conn.writeVariable("Application.GVL_Conveyor.sensor1", true);
+    if (cargo.getX() == sensor2.getX() - 1) {
+    	int n = Integer.parseInt(text38.getText());
+    	n++;
+    	text38.setText(Integer.toString(n));
+    }
 } else {
     sensor1.setFillColor(white);
     conn.writeVariable("Application.GVL_Conveyor.sensor1", false);
@@ -312,6 +319,11 @@ if (cargo.getX() > sensor1.getX() && cargo.getX() < sensor2.getX()) {
 if (cargo.getX() > sensor2.getX() && cargo.getX() < sensor3.getX()) {
     sensor2.setFillColor(red);
     conn.writeVariable("Application.GVL_Conveyor.sensor2", true);
+    if (cargo.getX() == sensor3.getX() - 1) {
+    	int n = Integer.parseInt(text36.getText());
+    	n++;
+    	text36.setText(Integer.toString(n));
+    }
 } else {
     sensor2.setFillColor(white);
     conn.writeVariable("Application.GVL_Conveyor.sensor2", false);
@@ -319,6 +331,11 @@ if (cargo.getX() > sensor2.getX() && cargo.getX() < sensor3.getX()) {
 if (cargo.getX() > sensor3.getX() && cargo.getX() < sensor4.getX()) {
     sensor3.setFillColor(red);
     conn.writeVariable("Application.GVL_Conveyor.sensor3", true);
+    if (cargo.getX() == sensor4.getX() - 1) {
+    	int n = Integer.parseInt(text39.getText());
+    	n++;
+    	text39.setText(Integer.toString(n));
+    }
 } else {
     sensor3.setFillColor(white);
     conn.writeVariable("Application.GVL_Conveyor.sensor3", false);
@@ -326,17 +343,19 @@ if (cargo.getX() > sensor3.getX() && cargo.getX() < sensor4.getX()) {
 if (cargo.getX() > sensor4.getX() && cargo.getX() < belt.getX() + belt.getWidth()) {
     sensor4.setFillColor(red);
     conn.writeVariable("Application.GVL_Conveyor.sensor4", true);
+    if (cargo.getX() == belt.getX() + belt.getWidth() - 1) {
+    	int n = Integer.parseInt(text37.getText());
+    	n++;
+    	text37.setText(Integer.toString(n));
+    }
 } else {
     sensor4.setFillColor(white);
     conn.writeVariable("Application.GVL_Conveyor.sensor4", false);
-}
-
-conn.writeVariable("Application.GVL_Conveyor.beltSpeed", (float) beltSpeed);
-conn.writeVariable("Application.GVL_Conveyor.movingDirection", (short) movingDirection);]]></Action>
+}]]></Action>
 				</Event>
 				<Event>
 					<Id>1738857800026</Id>
-					<Name><![CDATA[valve_colors]]></Name>
+					<Name><![CDATA[colors]]></Name>
 					<X>120</X><Y>1600</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -379,7 +398,13 @@ if (outValve2Open) {
 	outValve2.setFillColor(yellow);
 } else {
 	outValve2.setFillColor(white);
-}]]></Action>
+}
+
+autoValveState.setY(1290-autoValveOpen*170);
+autoValveState.setHeight(autoValveOpen*170);
+
+tank.setY(1370 - tankLevel*2.3);
+tank.setHeight(tankLevel*2.3);]]></Action>
 				</Event>
 				<Event>
 					<Id>1738865059562</Id>
@@ -410,12 +435,12 @@ if (outValve2Open) {
 						</RecurrenceCode>
 						<Condition><![CDATA[false]]></Condition>
 					</Properties>
-					<Action><![CDATA[if (tankLevel > 20) {
+					<Action><![CDATA[/*if (tankLevel > 20) {
 	outValve1Open = true;
 } else {
 	outValve1Open = false;
 }
-conn.writeVariable("Application.GVL_BottlingLine.outValve1Open", outValve1Open);
+conn.writeVariable("Application.GVL_BottlingLine.outValve1Open", outValve1Open);*/
 
 if (tankLevel > 80) {
 	if (tankLevel > 90) {
@@ -423,10 +448,10 @@ if (tankLevel > 80) {
 	} else {
 		conn.writeVariable("Application.GVL_BottlingLine.tankHH", false);
 	}
-	outValve2Open = true;
+	//outValve2Open = true;
 	conn.writeVariable("Application.GVL_BottlingLine.tankH", true);
 } else {
-	outValve2Open = false;
+	//outValve2Open = false;
 	conn.writeVariable("Application.GVL_BottlingLine.tankHH", false);
 	conn.writeVariable("Application.GVL_BottlingLine.tankH", false);
 	if (tankLevel < 20) {
@@ -435,9 +460,9 @@ if (tankLevel > 80) {
 		conn.writeVariable("Application.GVL_BottlingLine.tankLL", false);
 	}
 }
-conn.writeVariable("Application.GVL_BottlingLine.outValve2Open", outValve2Open);
+//conn.writeVariable("Application.GVL_BottlingLine.outValve2Open", outValve2Open);
 
-if (tankLevel < 40 && manualValveOpen) {
+/*if (tankLevel < 40 && manualValveOpen) {
 	autoValveOpen += 0.01;
 } else if (tankLevel > 70 || !manualValveOpen) {
 	autoValveOpen -= 0.01;
@@ -447,17 +472,78 @@ if (autoValveOpen > 1) {
 } else if (autoValveOpen < 0) {
 	autoValveOpen = 0;
 }
-autoValveState.setY(1290-autoValveOpen*170);
-autoValveState.setHeight(autoValveOpen*170);
-conn.writeVariable("Application.GVL_BottlingLine.autoValveOpen", autoValveOpen);
+conn.writeVariable("Application.GVL_BottlingLine.autoValveOpen", autoValveOpen);*/
 
 int mv = manualValveOpen? 1 : 0;
 int ov1 = outValve1Open? 1 : 0;
 int ov2 = outValve2Open? 1 : 0;
 tankLevel = tankLevel + mv*autoValveOpen*3 - ov1 - ov2;
-tank.setY(1370 - tankLevel*2.3);
-tank.setHeight(tankLevel*2.3);
 conn.writeVariable("Application.GVL_BottlingLine.tankLevel", tankLevel);]]></Action>
+				</Event>
+				<Event>
+					<Id>1739525389099</Id>
+					<Name><![CDATA[plc_read_line]]></Name>
+					<X>410</X><Y>1600</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties TriggerType="timeout" Mode="cyclic">
+						<Timeout Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</Timeout>
+						<Rate Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="RateUnits"><![CDATA[PER_SECOND]]></Unit>
+						</Rate>
+						<OccurrenceAtTime>true</OccurrenceAtTime>
+						<OccurrenceDate>1739606400000</OccurrenceDate>
+						<OccurrenceTime Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</OccurrenceTime>
+						<RecurrenceCode Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</RecurrenceCode>
+						<Condition><![CDATA[false]]></Condition>
+					</Properties>
+					<Action><![CDATA[autoValveOpen = conn.readFloat("Application.GVL_BottlingLine.autoValveOpen");
+outValve1Open = conn.readBool("Application.GVL_BottlingLine.outValve1Open");
+outValve2Open = conn.readBool("Application.GVL_BottlingLine.outValve2Open");]]></Action>
+				</Event>
+				<Event>
+					<Id>1739525922459</Id>
+					<Name><![CDATA[plc_read_conveyor]]></Name>
+					<X>300</X><Y>480</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties TriggerType="timeout" Mode="cyclic">
+						<Timeout Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</Timeout>
+						<Rate Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="RateUnits"><![CDATA[PER_SECOND]]></Unit>
+						</Rate>
+						<OccurrenceAtTime>true</OccurrenceAtTime>
+						<OccurrenceDate>1739606400000</OccurrenceDate>
+						<OccurrenceTime Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</OccurrenceTime>
+						<RecurrenceCode Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</RecurrenceCode>
+						<Condition><![CDATA[false]]></Condition>
+					</Properties>
+					<Action><![CDATA[beltSpeed = conn.readFloat("Application.GVL_Conveyor.beltSpeed");
+movingDirection = (short) conn.readInt("Application.GVL_Conveyor.movingDirection");]]></Action>
 				</Event>
 			</Events>
 			<Functions>
@@ -522,7 +608,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1738162778677</Id>
 					<Name><![CDATA[button3]]></Name>
-					<X>490</X><Y>220</Y>
+					<X>430</X><Y>220</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -532,38 +618,18 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
-						<ActionCode><![CDATA[movingDirection = 0;]]></ActionCode>
+						<ActionCode><![CDATA[movingDirection = 0;
+conn.writeVariable("Application.GVL_Conveyor.movingDirection", movingDirection);]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
 						<LabelText><![CDATA[3]]></LabelText>
 					</ExtendedProperties>
 				</Control>
-				<Control Type="CheckBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1738162778681</Id>
-					<Name><![CDATA[checkbox7]]></Name>
-					<X>40</X><Y>330</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<LabelText><![CDATA[7]]></LabelText>
-						<LinkTo>false</LinkTo>
-	 				</ExtendedProperties>
-				</Control>
 				<Rectangle>
 					<Id>1738162778683</Id>
 					<Name><![CDATA[rectangle5]]></Name>
-					<X>810</X><Y>260</Y>
+					<X>750</X><Y>260</Y>
 					<Label><X>10</X><Y>10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -585,7 +651,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Text>
 					<Id>1738162778685</Id>
 					<Name><![CDATA[text10]]></Name>
-					<X>900</X><Y>310</Y>
+					<X>840</X><Y>310</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -606,7 +672,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Rectangle>
 					<Id>1738162778687</Id>
 					<Name><![CDATA[rectangle4]]></Name>
-					<X>810</X><Y>190</Y>
+					<X>750</X><Y>190</Y>
 					<Label><X>10</X><Y>10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -628,7 +694,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Oval>
 					<Id>1738162778689</Id>
 					<Name><![CDATA[sensor2]]></Name>
-					<X>410</X><Y>350</Y>
+					<X>350</X><Y>350</Y>
 					<Label><X>0</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -650,7 +716,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Oval>
 					<Id>1738162778691</Id>
 					<Name><![CDATA[lamp1]]></Name>
-					<X>290</X><Y>190</Y>
+					<X>230</X><Y>190</Y>
 					<Label><X>0</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -672,7 +738,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Oval>
 					<Id>1738162778693</Id>
 					<Name><![CDATA[lamp4]]></Name>
-					<X>650</X><Y>190</Y>
+					<X>590</X><Y>190</Y>
 					<Label><X>0</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -695,7 +761,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1738162778695</Id>
 					<Name><![CDATA[button2]]></Name>
-					<X>370</X><Y>220</Y>
+					<X>310</X><Y>220</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -705,7 +771,8 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
-						<ActionCode><![CDATA[movingDirection = 0;]]></ActionCode>
+						<ActionCode><![CDATA[movingDirection = 0;
+conn.writeVariable("Application.GVL_Conveyor.movingDirection", movingDirection);]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -715,7 +782,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Oval>
 					<Id>1738162778697</Id>
 					<Name><![CDATA[sensor3]]></Name>
-					<X>530</X><Y>350</Y>
+					<X>470</X><Y>350</Y>
 					<Label><X>0</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -734,52 +801,10 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 					<FillColor>-1</FillColor>
 					<FillMaterial>null</FillMaterial>
 				</Oval>
-				<Text>
-					<Id>1738162778701</Id>
-					<Name><![CDATA[text8]]></Name>
-					<X>848</X><Y>200</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D</DrawMode>
-					<EmbeddedIcon>false</EmbeddedIcon>
-					<Z>0</Z>
-					<Rotation>0.0</Rotation>
-					<Color>-16777216</Color>
-					<Text><![CDATA[0000]]></Text>
-					<Font>
-						<Name>SansSerif</Name>
-						<Size>16</Size>
-						<Style>0</Style>
-					</Font>
-					<Alignment>LEFT</Alignment>
-				</Text>
-				<Text>
-					<Id>1738162778703</Id>
-					<Name><![CDATA[text]]></Name>
-					<X>30</X><Y>130</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D</DrawMode>
-					<EmbeddedIcon>false</EmbeddedIcon>
-					<Z>0</Z>
-					<Rotation>0.0</Rotation>
-					<Color>-16777216</Color>
-					<Text><![CDATA[Тумблеры]]></Text>
-					<Font>
-						<Name>SansSerif</Name>
-						<Size>16</Size>
-						<Style>0</Style>
-					</Font>
-					<Alignment>LEFT</Alignment>
-				</Text>
 				<Rectangle>
 					<Id>1738162778705</Id>
 					<Name><![CDATA[belt]]></Name>
-					<X>250</X><Y>310</Y>
+					<X>190</X><Y>310</Y>
 					<Label><X>10</X><Y>10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -801,7 +826,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Oval>
 					<Id>1738162778707</Id>
 					<Name><![CDATA[lamp3]]></Name>
-					<X>530</X><Y>190</Y>
+					<X>470</X><Y>190</Y>
 					<Label><X>0</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -823,7 +848,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Text>
 					<Id>1738162778709</Id>
 					<Name><![CDATA[text2]]></Name>
-					<X>180</X><Y>230</Y>
+					<X>120</X><Y>230</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -844,7 +869,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Text>
 					<Id>1738162778711</Id>
 					<Name><![CDATA[text9]]></Name>
-					<X>848</X><Y>270</Y>
+					<X>790</X><Y>270</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -854,7 +879,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
 					<Color>-16777216</Color>
-					<Text><![CDATA[0000]]></Text>
+					<Text><![CDATA[0]]></Text>
 					<Font>
 						<Name>SansSerif</Name>
 						<Size>16</Size>
@@ -865,7 +890,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Text>
 					<Id>1738162778713</Id>
 					<Name><![CDATA[text1]]></Name>
-					<X>190</X><Y>130</Y>
+					<X>130</X><Y>130</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -883,31 +908,10 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 					</Font>
 					<Alignment>LEFT</Alignment>
 				</Text>
-				<Control Type="CheckBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1738162778715</Id>
-					<Name><![CDATA[checkbox3]]></Name>
-					<X>40</X><Y>210</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<LabelText><![CDATA[3]]></LabelText>
-						<LinkTo>false</LinkTo>
-	 				</ExtendedProperties>
-				</Control>
 				<Oval>
 					<Id>1738162778717</Id>
 					<Name><![CDATA[oval]]></Name>
-					<X>940</X><Y>350</Y>
+					<X>880</X><Y>350</Y>
 					<Label><X>0</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -926,31 +930,10 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 					<FillColor>-65536</FillColor>
 					<FillMaterial>null</FillMaterial>
 				</Oval>
-				<Control Type="CheckBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1738162778719</Id>
-					<Name><![CDATA[checkbox2]]></Name>
-					<X>40</X><Y>180</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<LabelText><![CDATA[2]]></LabelText>
-						<LinkTo>false</LinkTo>
-	 				</ExtendedProperties>
-				</Control>
 				<Rectangle>
 					<Id>1738162778721</Id>
 					<Name><![CDATA[rectangle6]]></Name>
-					<X>790</X><Y>310</Y>
+					<X>730</X><Y>310</Y>
 					<Label><X>10</X><Y>10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -972,7 +955,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Oval>
 					<Id>1738162778723</Id>
 					<Name><![CDATA[lamp2]]></Name>
-					<X>410</X><Y>190</Y>
+					<X>350</X><Y>190</Y>
 					<Label><X>0</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -991,31 +974,10 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 					<FillColor>-1</FillColor>
 					<FillMaterial>null</FillMaterial>
 				</Oval>
-				<Control Type="CheckBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1738162778725</Id>
-					<Name><![CDATA[checkbox5]]></Name>
-					<X>40</X><Y>270</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<LabelText><![CDATA[5]]></LabelText>
-						<LinkTo>false</LinkTo>
-	 				</ExtendedProperties>
-				</Control>
 				<Text>
 					<Id>1738162778727</Id>
 					<Name><![CDATA[text6]]></Name>
-					<X>840</X><Y>170</Y>
+					<X>780</X><Y>170</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1037,7 +999,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1738162778729</Id>
 					<Name><![CDATA[button4]]></Name>
-					<X>610</X><Y>220</Y>
+					<X>550</X><Y>220</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1047,7 +1009,8 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
-						<ActionCode><![CDATA[movingDirection = 1;]]></ActionCode>
+						<ActionCode><![CDATA[movingDirection = 1;
+conn.writeVariable("Application.GVL_Conveyor.movingDirection", movingDirection);]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -1057,7 +1020,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Text>
 					<Id>1738162778731</Id>
 					<Name><![CDATA[text4]]></Name>
-					<X>180</X><Y>340</Y>
+					<X>120</X><Y>340</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1079,7 +1042,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				 	<EmbeddedIcon>false</EmbeddedIcon>				
 					<Id>1738162778733</Id>
 					<Name><![CDATA[button1]]></Name>
-					<X>250</X><Y>220</Y>
+					<X>190</X><Y>220</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1089,7 +1052,9 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
-						<ActionCode><![CDATA[movingDirection = -1;]]></ActionCode>
+						<ActionCode><![CDATA[movingDirection = -1;
+//plc_read_conveyor.restart(15);
+conn.writeVariable("Application.GVL_Conveyor.movingDirection", movingDirection);]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -1099,7 +1064,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Oval>
 					<Id>1738162778735</Id>
 					<Name><![CDATA[sensor4]]></Name>
-					<X>650</X><Y>350</Y>
+					<X>590</X><Y>350</Y>
 					<Label><X>0</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1118,31 +1083,10 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 					<FillColor>-1</FillColor>
 					<FillMaterial>null</FillMaterial>
 				</Oval>
-				<Control Type="CheckBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1738162778737</Id>
-					<Name><![CDATA[checkbox4]]></Name>
-					<X>40</X><Y>240</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<LabelText><![CDATA[4]]></LabelText>
-						<LinkTo>false</LinkTo>
-	 				</ExtendedProperties>
-				</Control>
 				<Text>
 					<Id>1738162778739</Id>
 					<Name><![CDATA[text3]]></Name>
-					<X>180</X><Y>180</Y>
+					<X>120</X><Y>180</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1163,7 +1107,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Text>
 					<Id>1738162778741</Id>
 					<Name><![CDATA[text12]]></Name>
-					<X>803</X><Y>340</Y>
+					<X>743</X><Y>340</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1184,7 +1128,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Oval>
 					<Id>1738162778743</Id>
 					<Name><![CDATA[sensor1]]></Name>
-					<X>290</X><Y>350</Y>
+					<X>230</X><Y>350</Y>
 					<Label><X>0</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1206,7 +1150,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Rectangle>
 					<Id>1738162778745</Id>
 					<Name><![CDATA[rectangle3]]></Name>
-					<X>750</X><Y>150</Y>
+					<X>690</X><Y>150</Y>
 					<Label><X>10</X><Y>10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1225,31 +1169,10 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 					<FillColor/>
 					<FillMaterial>null</FillMaterial>
 				</Rectangle>
-				<Control Type="CheckBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1738162778747</Id>
-					<Name><![CDATA[checkbox6]]></Name>
-					<X>40</X><Y>300</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<LabelText><![CDATA[6]]></LabelText>
-						<LinkTo>false</LinkTo>
-	 				</ExtendedProperties>
-				</Control>
 				<Text>
 					<Id>1738162778749</Id>
 					<Name><![CDATA[text7]]></Name>
-					<X>770</X><Y>240</Y>
+					<X>710</X><Y>240</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1270,7 +1193,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Rectangle>
 					<Id>1738162778751</Id>
 					<Name><![CDATA[rectangle1]]></Name>
-					<X>160</X><Y>150</Y>
+					<X>100</X><Y>150</Y>
 					<Label><X>10</X><Y>10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1289,32 +1212,10 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 					<FillColor/>
 					<FillMaterial>null</FillMaterial>
 				</Rectangle>
-				<Rectangle>
-					<Id>1738162778753</Id>
-					<Name><![CDATA[rectangle]]></Name>
-					<X>20</X><Y>150</Y>
-					<Label><X>10</X><Y>10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<EmbeddedIcon>false</EmbeddedIcon>
-					<Z>0</Z>
-					<ZHeight>10</ZHeight>
-					<LineWidth>2</LineWidth>
-					<LineColor>-16777216</LineColor>
-					<LineMaterial>null</LineMaterial>
-					<LineStyle>SOLID</LineStyle>
-					<Width>100</Width>
-					<Height>240</Height>
-					<Rotation>0.0</Rotation>
-					<FillColor/>
-					<FillMaterial>null</FillMaterial>
-				</Rectangle>
 				<Text>
 					<Id>1738162778755</Id>
 					<Name><![CDATA[text5]]></Name>
-					<X>780</X><Y>130</Y>
+					<X>720</X><Y>130</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1335,7 +1236,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Rectangle>
 					<Id>1738162778757</Id>
 					<Name><![CDATA[rectangle7]]></Name>
-					<X>790</X><Y>340</Y>
+					<X>730</X><Y>340</Y>
 					<Label><X>10</X><Y>10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1354,31 +1255,10 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 					<FillColor/>
 					<FillMaterial>null</FillMaterial>
 				</Rectangle>
-				<Control Type="CheckBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1738162778759</Id>
-					<Name><![CDATA[checkbox1]]></Name>
-					<X>40</X><Y>150</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<LabelText><![CDATA[1]]></LabelText>
-						<LinkTo>false</LinkTo>
-	 				</ExtendedProperties>
-				</Control>
 				<Text>
 					<Id>1738162778761</Id>
 					<Name><![CDATA[text11]]></Name>
-					<X>803</X><Y>310</Y>
+					<X>743</X><Y>310</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1396,27 +1276,6 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 					</Font>
 					<Alignment>LEFT</Alignment>
 				</Text>
-				<Control Type="CheckBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
-					<Id>1738162778763</Id>
-					<Name><![CDATA[checkbox8]]></Name>
-					<X>40</X><Y>360</Y>
-					<Label><X>0</X><Y>-10</Y></Label>
-					<PublicFlag>true</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>false</ShowLabel>
-					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
-					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
-						<TextColor/>
-						<Enabled>true</Enabled>
-					</BasicProperties>
-					<ExtendedProperties>
-						<Font Name="Dialog" Size="11" Style="0"/>
-						<LabelText><![CDATA[8]]></LabelText>
-						<LinkTo>false</LinkTo>
-	 				</ExtendedProperties>
-				</Control>
 				<Group>
 					<Id>1738163486487</Id>
 					<Name><![CDATA[groupMainMenu]]></Name>
@@ -1531,7 +1390,7 @@ groupMainMenu.setPos(viewArea.getX()+150, viewArea.getY()+30);]]></Body>
 				<Oval>
 					<Id>1738164614545</Id>
 					<Name><![CDATA[cargo]]></Name>
-					<X>270</X><Y>300</Y>
+					<X>210</X><Y>300</Y>
 					<Label><X>0</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -2886,6 +2745,13 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[if (self.getText() == "False") {
+	lamp5.setFillColor(yellow);
+	self.setText("True");
+} else {
+	lamp5.setFillColor(white);
+	self.setText("False");
+}]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -2906,6 +2772,13 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[if (self.getText() == "False") {
+	lamp6.setFillColor(yellow);
+	self.setText("True");
+} else {
+	lamp6.setFillColor(white);
+	self.setText("False");
+}]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -2926,6 +2799,13 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[if (self.getText() == "False") {
+	lamp7.setFillColor(yellow);
+	self.setText("True");
+} else {
+	lamp7.setFillColor(white);
+	self.setText("False");
+}]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -2946,6 +2826,13 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
                         <EmbeddedIcon>false</EmbeddedIcon>	
 						<TextColor/>
 						<Enabled>true</Enabled>
+						<ActionCode><![CDATA[if (self.getText() == "False") {
+	lamp8.setFillColor(yellow);
+	self.setText("True");
+} else {
+	lamp8.setFillColor(white);
+	self.setText("False");
+}]]></ActionCode>
 					</BasicProperties>
 					<ExtendedProperties>
 						<Font Name="Dialog" Size="11" Style="0"/>
@@ -3294,6 +3181,153 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
 					<FillColor>-1</FillColor>
 					<FillMaterial>null</FillMaterial>
 				</Oval>
+				<Text>
+					<Id>1740041061366</Id>
+					<Name><![CDATA[text33]]></Name>
+					<X>800</X><Y>270</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[0]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1740041093365</Id>
+					<Name><![CDATA[text34]]></Name>
+					<X>810</X><Y>270</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[0]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1740041098532</Id>
+					<Name><![CDATA[text35]]></Name>
+					<X>820</X><Y>270</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[0]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1740041151861</Id>
+					<Name><![CDATA[text36]]></Name>
+					<X>800</X><Y>200</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[0]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1740041151863</Id>
+					<Name><![CDATA[text37]]></Name>
+					<X>820</X><Y>200</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[0]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1740041151865</Id>
+					<Name><![CDATA[text38]]></Name>
+					<X>790</X><Y>200</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[0]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Text>
+					<Id>1740041151867</Id>
+					<Name><![CDATA[text39]]></Name>
+					<X>810</X><Y>200</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[0]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>16</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
 			</Presentation>
 
 				</Level>
