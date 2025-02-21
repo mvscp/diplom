@@ -194,16 +194,16 @@
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[float]]></Type>        
+						<Type><![CDATA[boolean]]></Type>        
 						<InitialValue Class="CodeValue">
-							<Code><![CDATA[0]]></Code>
+							<Code><![CDATA[true]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
 					<Id>1738858065823</Id>
 					<Name><![CDATA[tankLevel]]></Name>
-					<X>450</X><Y>1010</Y>
+					<X>590</X><Y>1010</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -218,7 +218,7 @@
 				<Variable Class="PlainVariable">
 					<Id>1738858238807</Id>
 					<Name><![CDATA[outValve1Open]]></Name>
-					<X>580</X><Y>1010</Y>
+					<X>720</X><Y>1010</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -233,7 +233,7 @@
 				<Variable Class="PlainVariable">
 					<Id>1738858257483</Id>
 					<Name><![CDATA[outValve2Open]]></Name>
-					<X>730</X><Y>1010</Y>
+					<X>870</X><Y>1010</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -362,6 +362,21 @@
 						<Type><![CDATA[float]]></Type>        
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1740122356124</Id>
+					<Name><![CDATA[autoValveFlowRate]]></Name>
+					<X>430</X><Y>1010</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[float]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[0]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
 			</Variables>
 			<Events>
 				<Event>
@@ -464,10 +479,26 @@ if (cargo.getX() + cargo.getRadiusX() > sensor4.getX() && cargo.getX() - cargo.g
 						</RecurrenceCode>
 						<Condition><![CDATA[false]]></Condition>
 					</Properties>
-					<Action><![CDATA[if (autoValveOpen == 0) {
+					<Action><![CDATA[if (!autoValveOpen) {
 	valveAuto.setFillColor(white);
+	checkbox10.value = false;
+	checkbox13.value = true;
+	checkbox.value = false;
+	checkbox11.value = true;
 } else {
 	valveAuto.setFillColor(yellow);
+	checkbox10.value = true;
+	checkbox13.value = false;
+	checkbox.value = true;
+	checkbox11.value = false;
+}
+
+if (manualValveOpen) {
+	checkbox9.value = true;
+	checkbox12.value = false;
+} else {
+	checkbox9.value = false;
+	checkbox12.value = true;
 }
 
 if (outValve1Open) {
@@ -482,8 +513,8 @@ if (outValve2Open) {
 	outValve2.setFillColor(white);
 }
 
-autoValveState.setY(1290-autoValveOpen*170);
-autoValveState.setHeight(autoValveOpen*170);
+autoValveState.setY(1290-autoValveFlowRate*170);
+autoValveState.setHeight(autoValveFlowRate*170);
 
 tank.setY(1370 - tankLevel*2.3);
 tank.setHeight(tankLevel*2.3);]]></Action>
@@ -544,22 +575,22 @@ if (tankLevel > 80) {
 }
 //conn.writeVariable("Application.GVL_BottlingLine.outValve2Open", outValve2Open);
 
-/*if (tankLevel < 40 && manualValveOpen) {
-	autoValveOpen += 0.01;
+if (tankLevel < 40 && manualValveOpen) {
+	autoValveFlowRate += 0.01;
 } else if (tankLevel > 70 || !manualValveOpen) {
-	autoValveOpen -= 0.01;
+	autoValveFlowRate -= 0.01;
 }
-if (autoValveOpen > 1) {
-	autoValveOpen = 1;
-} else if (autoValveOpen < 0) {
-	autoValveOpen = 0;
+if (autoValveFlowRate > 1) {
+	autoValveFlowRate = 1;
+} else if (autoValveFlowRate < 0) {
+	autoValveFlowRate = 0;
 }
-conn.writeVariable("Application.GVL_BottlingLine.autoValveOpen", autoValveOpen);*/
+//conn.writeVariable("Application.GVL_BottlingLine.autoValveOpen", autoValveOpen);
 
 int mv = manualValveOpen? 1 : 0;
 int ov1 = outValve1Open? 1 : 0;
 int ov2 = outValve2Open? 1 : 0;
-tankLevel = tankLevel + mv*autoValveOpen*3 - ov1 - ov2;
+tankLevel = tankLevel + mv*autoValveFlowRate*3 - ov1 - ov2;
 conn.writeVariable("Application.GVL_BottlingLine.tankLevel", tankLevel);]]></Action>
 				</Event>
 				<Event>
@@ -591,7 +622,7 @@ conn.writeVariable("Application.GVL_BottlingLine.tankLevel", tankLevel);]]></Act
 						</RecurrenceCode>
 						<Condition><![CDATA[false]]></Condition>
 					</Properties>
-					<Action><![CDATA[autoValveOpen = conn.readFloat("Application.GVL_BottlingLine.autoValveOpen");
+					<Action><![CDATA[autoValveOpen = conn.readBool("Application.GVL_BottlingLine.autoValveOpen");
 outValve1Open = conn.readBool("Application.GVL_BottlingLine.outValve1Open");
 outValve2Open = conn.readBool("Application.GVL_BottlingLine.outValve2Open");
 
@@ -1614,6 +1645,7 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
 						<Font Name="Dialog" Size="11" Style="0"/>
 						<LabelText><![CDATA[Конц-к откр.]]></LabelText>
 						<LinkTo>false</LinkTo>
+						<Link>autoValveOpen</Link>
 	 				</ExtendedProperties>
 				</Control>
 				<Control Type="CheckBox">
@@ -1635,6 +1667,7 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
 						<Font Name="Dialog" Size="11" Style="0"/>
 						<LabelText><![CDATA[Пуск-ль откр.]]></LabelText>
 						<LinkTo>false</LinkTo>
+						<Link>manualValveOpen</Link>
 	 				</ExtendedProperties>
 				</Control>
 				<Control Type="CheckBox">
@@ -1656,6 +1689,7 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
 						<Font Name="Dialog" Size="11" Style="0"/>
 						<LabelText><![CDATA[Ком-да откр.]]></LabelText>
 						<LinkTo>false</LinkTo>
+						<Link>autoValveOpen</Link>
 	 				</ExtendedProperties>
 				</Control>
 				<Control Type="CheckBox">
@@ -1677,6 +1711,7 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
 						<Font Name="Dialog" Size="11" Style="0"/>
 						<LabelText><![CDATA[Конц-к закр.]]></LabelText>
 						<LinkTo>false</LinkTo>
+						<Link>!autoValveOpen</Link>
 	 				</ExtendedProperties>
 				</Control>
 				<Control Type="CheckBox">
@@ -1698,6 +1733,7 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
 						<Font Name="Dialog" Size="11" Style="0"/>
 						<LabelText><![CDATA[Пуск-ль закр.]]></LabelText>
 						<LinkTo>false</LinkTo>
+						<Link>!manualValveOpen</Link>
 	 				</ExtendedProperties>
 				</Control>
 				<Control Type="CheckBox">
@@ -1719,6 +1755,7 @@ conn.writeVariable("Application.GVL_BottlingLine.manualValveOpen", manualValveOp
 						<Font Name="Dialog" Size="11" Style="0"/>
 						<LabelText><![CDATA[Ком-да закр.]]></LabelText>
 						<LinkTo>false</LinkTo>
+						<Link>!autoValveOpen</Link>
 	 				</ExtendedProperties>
 				</Control>
 				<Rectangle>
